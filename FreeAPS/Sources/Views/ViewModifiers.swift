@@ -12,7 +12,8 @@ struct RoundedBackground: ViewModifier {
         content
             .padding()
             .background(
-                RoundedRectangle(cornerRadius: 8, style: .continuous)
+                Rectangle()
+                    // RoundedRectangle(cornerRadius: 8, style: .continuous)
                     .fill()
                     .foregroundColor(color)
             )
@@ -30,7 +31,8 @@ struct CapsulaBackground: ViewModifier {
         content
             .padding()
             .background(
-                Capsule()
+                Rectangle()
+                    // Capsule()
                     .fill()
                     .foregroundColor(color)
             )
@@ -42,6 +44,27 @@ struct CompactSectionSpacing: ViewModifier {
         if #available(iOS 17, *) {
             return content
                 .listSectionSpacing(.compact)
+        } else {
+            return content }
+    }
+}
+
+struct ScrollTargetLayoutModifier: ViewModifier {
+    func body(content: Content) -> some View {
+        if #available(iOS 17, *) {
+            return content
+                .scrollTargetLayout()
+        } else {
+            return content }
+    }
+}
+
+struct ScrollPositionModifier: ViewModifier {
+    @Binding var id: Int?
+    func body(content: Content) -> some View {
+        if #available(iOS 17, *) {
+            return content
+                .scrollPosition(id: $id)
         } else {
             return content }
     }
@@ -116,7 +139,8 @@ struct ColouredRoundedBackground: View {
     @Environment(\.colorScheme) var colorScheme
 
     var body: some View {
-        RoundedRectangle(cornerRadius: 15)
+        Rectangle()
+            // RoundedRectangle(cornerRadius: 15)
             .fill(
                 colorScheme == .dark ? .black :
                     Color.white
@@ -140,7 +164,7 @@ struct LoopEllipse: View {
     let stroke: Color
     var body: some View {
         RoundedRectangle(cornerRadius: 15)
-            .stroke(stroke, lineWidth: 2)
+            .stroke(stroke, lineWidth: colorScheme == .light ? 2 : 1)
             .background(
                 RoundedRectangle(cornerRadius: 15)
                     .fill(Color.white).opacity(colorScheme == .light ? 0.2 : 0.08)
@@ -153,7 +177,7 @@ struct TimeEllipse: View {
     let characters: Int
     var body: some View {
         RoundedRectangle(cornerRadius: 15)
-            .fill(Color.gray).opacity(colorScheme == .light ? 0.2 : 0.08)
+            .fill(Color.gray).opacity(colorScheme == .light ? 0.2 : 0.2)
             .frame(width: CGFloat(characters * 7), height: 25)
     }
 }
@@ -319,6 +343,14 @@ extension View {
 
     func compactSectionSpacing() -> some View {
         modifier(CompactSectionSpacing())
+    }
+
+    func scrollTargetLayoutiOS17() -> some View {
+        modifier(ScrollTargetLayoutModifier())
+    }
+
+    func scrollPositioniOS17(id: Binding<Int?>) -> some View {
+        modifier(ScrollPositionModifier(id: id))
     }
 
     func asAny() -> AnyView { .init(self) }
